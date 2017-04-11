@@ -2,9 +2,10 @@
   #app
     img(src='./assets/logo.png')
     h1 KinetiMusic
+    select(v-model="selectedCountry")
+      option(v-for="country in countries" v-bind:value="country.value") {{country.name}}
     ul
       artist(v-for="artist in artists" v-bind:artist="artist" v-bind:key="artist.mbid")
-
 </template>
 
 <script>
@@ -15,18 +16,34 @@ export default {
   name: 'app',
   data () {
     return {
-      artists: []
+      artists: [],
+      countries: [
+        {name: 'Colombia', value: 'colombia'},
+        {name: 'Argentina', value: 'argentina'},
+        {name: 'España', value: 'spain'}
+      ],
+      selectedCountry: 'colombia'
     }
   },
   components: {
-    artist: artist
+    artist
   },
-  mounted: function () {
-    const self = this
-    getArtists()
+  methods: {
+    refreshArtists() {
+      const self = this
+      getArtists(this.selectedCountry)
       .then(function (artists) {
         self.artists = artists
       })
+    }
+  },
+  mounted () {
+    this.refreshArtists()
+  },
+  watch: {
+    selectedCountry() {
+      this.refreshArtists()
+    }
   }
 
 }
